@@ -57,6 +57,29 @@ public class UserServiceImpl implements UserService {
         return userDOMapper.selectByelPhone(telphone);
     }
 
+    @Override
+    public UserModel validateLogin(String telphone, String password) throws BusinessException {
+
+        UserDO userDO = userDOMapper.selectByelPhone(telphone);
+        UserModel userModel = new UserModel();
+        BeanUtils.copyProperties(userDO,userModel);
+        if (userDO == null) {
+            throw new BusinessException(EMBusinessError.LOGIN_ERROR, "用户名或密码不正确");
+        }
+
+        UserPasswordDO userPasswordDO = userPasswordDOMapper.selectByUserId(userDO.getId());
+        boolean exist = StringUtils.equals(userPasswordDO.getEncrptPassword(), password);
+
+        if (exist){
+            userModel.setEncrptPassword(userPasswordDO.getEncrptPassword());
+            return  userModel;
+        } else{
+            throw new BusinessException(EMBusinessError.LOGIN_ERROR, "用户名或密码不正确");
+        }
+
+
+    }
+
     private UserDO convertFromModel(UserModel userModel) {
         if (userModel==null){
             return null;

@@ -111,10 +111,10 @@ public class UserController {
             throw new BusinessException(EMBusinessError.TELPHONE_EXIST, "该手机号已注册");
         }
 
-
-
         return CommonReturnType.create(null);
     }
+
+
 
     private UserModel convert2Model(UserForm userForm) throws UnsupportedEncodingException, NoSuchAlgorithmException {
         if (userForm == null) {
@@ -128,6 +128,7 @@ public class UserController {
         return userModel;
     }
 
+
     public String encodeByMD5(String str) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         MessageDigest MD5 = MessageDigest.getInstance("MD5");
         Base64.Encoder encoder = Base64.getEncoder();
@@ -137,12 +138,22 @@ public class UserController {
     }
 
 
-//    public CommonReturnType login(@RequestParam("telphone")String telphone,@RequestParam("encrptPassword")String password) throws BusinessException {
-//
-//        if (StringUtils.isEmpty(telphone)||StringUtils.isEmpty(password)) {
-//            throw new BusinessException(EMBusinessError.PARAM_ERROR, "用户名或密码不正确");
-//        }
-//
-//    }
+    @PostMapping("/login")
+    @ResponseBody
+    public CommonReturnType login(@RequestParam("telphone")String telphone,@RequestParam("encrptPassword")String password) throws BusinessException, UnsupportedEncodingException, NoSuchAlgorithmException {
+
+        if (StringUtils.isEmpty(telphone)||StringUtils.isEmpty(password)) {
+            throw new BusinessException(EMBusinessError.PARAM_ERROR, "用户名或密码不正确");
+        }
+
+        UserModel userModel = userService.validateLogin(telphone, this.encodeByMD5(password));
+
+            httpServletRequest.getSession().setAttribute("IS_LOGIN",true);
+            httpServletRequest.getSession().setAttribute("LOGIN_USER",userModel);
+            return  CommonReturnType.create(null);
+
+
+
+    }
 
 }

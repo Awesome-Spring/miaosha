@@ -29,4 +29,5 @@ public interface UserPasswordDOMapper {
     int updateByPrimaryKeySelective(UserPasswordDO record);
 
     int updateByPrimaryKey(UserPasswordDO record);
+
 }

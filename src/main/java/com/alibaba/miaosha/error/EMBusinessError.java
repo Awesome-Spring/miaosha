@@ -13,7 +13,8 @@ public enum EMBusinessError implements  CommonError {
     //20000开头表示用户相关错误定义
     USER_NOT_EXIT(20001,"用户不存在"),
     PARAM_ERROR(20002,"参数错误"),
-    TELPHONE_EXIST(20003,"手机号已注册")
+    TELPHONE_EXIST(20003,"手机号已注册"),
+    LOGIN_ERROR(20004,"用户名或者密码错误"),
     ;
 
 

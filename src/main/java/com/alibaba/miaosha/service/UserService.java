@@ -11,4 +11,6 @@ public interface UserService {
    void register(UserModel userModel) throws BusinessException;
 
     UserDO selectByTelPhone(String telphone);
+
+    UserModel validateLogin(String telphone, String password) throws BusinessException;
 }
