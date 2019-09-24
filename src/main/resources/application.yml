@@ -1,0 +1,42 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/miaosha?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
+    username: root
+    password: 230230
+    # 使用druid连接池
+    type: com.alibaba.druid.pool.DruidDataSource
+    # 配置druid连接池
+    initialSize: 5
+    minIdle: 5
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 30000
+    filters: stat
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: 20
+    sql-script-encoding: utf-8
+---
+server:
+  servlet:
+    context-path: /miaosha
+logging:
+  pattern:
+    console: "%d - %msg%n"
+#  path: /var/log/tomcat/
+  file: /var/log/tomcat/miaosha.log
+  level:
+    com.imooc.LoggerTest: info
+
+#禁用缓存
+spring:
+  thymeleaf:
+    cache: false
+
+
+mybatis:
+  mapper-locations: classpath:mapping/*.xml
