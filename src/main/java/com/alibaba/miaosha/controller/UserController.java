@@ -152,8 +152,6 @@ public class UserController {
             httpServletRequest.getSession().setAttribute("LOGIN_USER",userModel);
             return  CommonReturnType.create(null);
 
-
-
     }
 
 }
