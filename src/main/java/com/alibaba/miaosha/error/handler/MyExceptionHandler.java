@@ -14,7 +14,7 @@ import java.util.Map;
 @ResponseBody
 public class MyExceptionHandler {
 
-   // @ExceptionHandler(Exception.class)
+   @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.OK)
     public Object handler(HttpServletRequest request, Exception ex) {
         Map<String, Object> reponseData = new HashMap<>();

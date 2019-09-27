@@ -3,7 +3,7 @@ package com.alibaba.miaosha.controller;
 import com.alibaba.miaosha.controller.viewobject.ItemVO;
 import com.alibaba.miaosha.form.ItemForm;
 import com.alibaba.miaosha.response.CommonReturnType;
-import com.alibaba.miaosha.service.ItermService;
+import com.alibaba.miaosha.service.ItemService;
 import com.alibaba.miaosha.service.model.ItemModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -22,11 +22,11 @@ import java.util.stream.Collectors;
 public class ItemController {
 
     @Autowired
-    private ItermService itermService;
+    private ItemService itemService;
 
     @GetMapping("/get")
     public CommonReturnType getItem(@RequestParam("id")Integer id) {
-        ItemModel itemModel = itermService.getItemById(id);
+        ItemModel itemModel = itemService.getItemById(id);
 
         ItemVO itemVO = convertVOFromModel(itemModel);
 
@@ -36,7 +36,7 @@ public class ItemController {
     @GetMapping("/list")
     public CommonReturnType getAllItems() {
 
-        List<ItemModel> itemModelList = itermService.listItems();
+        List<ItemModel> itemModelList = itemService.listItems();
 
         /**
          * 使用 stream 方式将list内的ItemModel 转化为ItermVO
@@ -55,7 +55,7 @@ public class ItemController {
         //封装service请求创建商品
         ItemModel itemModel = new ItemModel();
         BeanUtils.copyProperties(itemForm, itemModel);
-        ItemModel itemReturn = itermService.createItem(itemModel);
+        ItemModel itemReturn = itemService.createItem(itemModel);
         ItemVO itemVO = convertVOFromModel(itemReturn);//返回前端的对象
 
         return CommonReturnType.create(itemVO);
@@ -67,6 +67,16 @@ public class ItemController {
         }
         ItemVO itemVO = new ItemVO();
         BeanUtils.copyProperties(itemModel,itemVO);
+        if (itemModel.getPromoModel() != null) { //有秒杀活动，封装相关秒杀属性
+            itemVO.setPromoStatus(itemModel.getPromoModel().getStatus()); //秒杀活动状态
+            itemVO.setPromoId(itemModel.getPromoModel().getId()); //秒杀活动Id
+            itemVO.setSatrtTime(itemModel.getPromoModel().getStartTime());//秒杀活动开始时间
+            itemVO.setPrice(itemModel.getPromoModel().getPromoPrice());//秒杀活动开始时间
+
+        }else { //没有秒杀活动
+            itemVO.setPromoStatus(0);
+        }
+
         return  itemVO;
     }
 }

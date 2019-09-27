@@ -20,4 +20,7 @@ public class ItemModel {
     private Integer stock;
     //商品图片
     private String imgUrl;
+
+    //如果prmodel 不为空，则表示其拥有还未结束的秒杀活动
+    private PromoModel  promoModel;
 }

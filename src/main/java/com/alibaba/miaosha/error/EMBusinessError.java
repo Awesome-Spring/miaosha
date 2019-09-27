@@ -15,6 +15,13 @@ public enum EMBusinessError implements  CommonError {
     PARAM_ERROR(20002,"参数错误"),
     TELPHONE_EXIST(20003,"手机号已注册"),
     LOGIN_ERROR(20004,"用户名或者密码错误"),
+    USER_NOT_LOGIN(20005,"用户未登录"),
+
+    //30000开头表示商品信息错误相关定义
+    ITEM_NOT_EXIST(30001,"商品不存在"),
+
+    //40000开头表示订单信息错误相关定义
+    STOCK_NOT_ENOUGH(40001,"库存不足"),
     ;
 
 

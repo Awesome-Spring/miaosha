@@ -223,6 +223,14 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <update id="increateSales" >
+    update item
+    set
+      sales = sales + #{amount}
+    where id = #{itemId}
+  </update>
+
   <update id="updateByPrimaryKey" parameterType="com.alibaba.miaosha.dataobject.ItemDO" >
     update item
     set title = #{title,jdbcType=VARCHAR},

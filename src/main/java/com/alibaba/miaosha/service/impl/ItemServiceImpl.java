@@ -4,8 +4,10 @@ import com.alibaba.miaosha.dao.ItemDOMapper;
 import com.alibaba.miaosha.dao.ItemStockDOMapper;
 import com.alibaba.miaosha.dataobject.ItemDO;
 import com.alibaba.miaosha.dataobject.ItemStockDO;
-import com.alibaba.miaosha.service.ItermService;
+import com.alibaba.miaosha.service.ItemService;
+import com.alibaba.miaosha.service.PromoService;
 import com.alibaba.miaosha.service.model.ItemModel;
+import com.alibaba.miaosha.service.model.PromoModel;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,15 +18,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ItermServiceImpl implements ItermService {
+public class ItemServiceImpl implements ItemService {
 
     @Autowired
-   private ItemDOMapper itemDOMapper;
+    private ItemDOMapper itemDOMapper;
 
     @Autowired
     private ItemStockDOMapper itemStockDOMapper;
 
-
+    @Autowired
+    private PromoService promoService;
 
     @Override
     @Transactional
@@ -46,10 +49,10 @@ public class ItermServiceImpl implements ItermService {
         //查询出所有ItemDO
         List<ItemDO> itemDOList = itemDOMapper.listItem();
         //封装成ItemModel
-        List<ItemModel> itemModels = itemDOList.stream().map(itemDO-> {
+        List<ItemModel> itemModels = itemDOList.stream().map(itemDO -> {
             ItemStockDO itemStockDO = itemStockDOMapper.selectByItemId(itemDO.getId());
             ItemModel itemModel = convertModelFromDataObject(itemDO, itemStockDO);
-            return  itemModel;
+            return itemModel;
         }).collect(Collectors.toList());
 
         return itemModels;
@@ -57,54 +60,74 @@ public class ItermServiceImpl implements ItermService {
 
     @Override
     public ItemModel getItemById(Integer id) {
-        ItemDO itemDO= itemDOMapper.selectByPrimaryKey(id);
-        if (itemDO ==null) {
-            return  null;
+        ItemDO itemDO = itemDOMapper.selectByPrimaryKey(id);
+        if (itemDO == null) {
+            return null;
         }
 
         //操作拿到库存数量,封装进Model
         ItemStockDO itemStockDO = itemStockDOMapper.selectByItemId(itemDO.getId());
-       if (itemStockDO==null) {
-           return  null;
-       }
+        if (itemStockDO == null) {
+            return null;
+        }
 
-      ItemModel itemModel =  convertModelFromDataObject(itemDO,itemStockDO);
-       itemModel.setStock(itemStockDO.getStock());
+        ItemModel itemModel = convertModelFromDataObject(itemDO, itemStockDO);
+        itemModel.setStock(itemStockDO.getStock());
+
+        //获得活动商品信息
+        PromoModel promoModel = promoService.getPromoByItemId(itemModel.getId());
+        if (promoModel != null &&promoModel.getStatus().intValue()!=3) { //加入活动
+            itemModel.setPromoModel(promoModel);
+        }
 
         return itemModel;
     }
 
+    @Override
+    @Transactional
+    public boolean decreateStock(Integer itemId, Integer amount) {
 
-    private ItemDO convertFormModel(ItemModel itemModel){
-
-        if (itemModel == null) {
-            return  null;
-        }
-        ItemDO itemDO = new ItemDO();
-        BeanUtils.copyProperties(itemModel,itemDO);
-        itemDO.setPrice(itemModel.getPrice().doubleValue());
-        return  itemDO;
+        int affectRows = itemStockDOMapper.decreaseStock(itemId, amount);
+        return affectRows > 0;
     }
 
-    private ItemStockDO convertStockFormModel(ItemModel itemModel){
+    @Override
+    @Transactional
+    public boolean increateSales(Integer itemId,Integer amount) {
+        int affectRows = itemDOMapper.increateSales(itemId, amount);
+        return affectRows > 0;
+    }
+
+    private ItemDO convertFormModel(ItemModel itemModel) {
 
         if (itemModel == null) {
-            return  null;
+            return null;
+        }
+        ItemDO itemDO = new ItemDO();
+        BeanUtils.copyProperties(itemModel, itemDO);
+        itemDO.setPrice(itemModel.getPrice().doubleValue());
+        return itemDO;
+    }
+
+    private ItemStockDO convertStockFormModel(ItemModel itemModel) {
+
+        if (itemModel == null) {
+            return null;
         }
         ItemStockDO itemStockDO = new ItemStockDO();
         itemStockDO.setItemId(itemModel.getId());
         itemStockDO.setStock(itemModel.getStock());
 
-        return  itemStockDO;
+        return itemStockDO;
     }
 
     private ItemModel convertModelFromDataObject(ItemDO itemDO, ItemStockDO itemStockDO) {
 
         ItemModel itemModel = new ItemModel();
-        BeanUtils.copyProperties(itemDO,itemModel);
+        BeanUtils.copyProperties(itemDO, itemModel);
         itemModel.setPrice(new BigDecimal(itemDO.getPrice()));
         itemModel.setStock(itemStockDO.getStock());
 
-        return  itemModel;
+        return itemModel;
     }
 }

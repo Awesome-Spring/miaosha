@@ -28,4 +28,6 @@ public interface ItemDOMapper {
     int updateByPrimaryKeySelective(ItemDO record);
 
     int updateByPrimaryKey(ItemDO record);
+
+    int increateSales(@Param("itemId")Integer itemId,@Param("amount") Integer amount);
 }

@@ -29,4 +29,8 @@ public interface ItemStockDOMapper {
     int updateByPrimaryKey(ItemStockDO record);
 
     ItemStockDO selectByItemId(Integer id);
+
+    int decreaseStock(@Param("itemId")Integer itemId,@Param("amount") Integer amount);
+
+
 }
