@@ -1,2 +1,2 @@
 # miaosha
-基于Spring Boot的秒杀原型
+基于Spring Boot构建的基础电商秒杀项目
