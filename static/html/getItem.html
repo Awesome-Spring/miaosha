@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <title>商品详情</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../layui/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../layui/css/signin.css" rel="stylesheet">
+</head>
+
+<body>
+
+
+<form class="form-signin">
+    <h1 class="h2 mb-3 font-weight-normal">商品详情</h1>
+
+    <div class="form-group" id="promo_name_container">
+        <label style="color:red" class="control-label" id="promo_name"></label>
+
+    </div>
+
+    <div class="form-group" id="promo_start_time_container">
+        <label style="color:red" class="control-label" id="promo_title">秒杀活动时间</label>
+        <div>
+            <label class="control-label" id="promo_start_time" />
+        </div>
+        <div>
+            <label  style="color:red" class="control-label" id="countdown" />
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label class="control-label">商品名称</label>
+        <div>
+            <label class="control-label" id="title" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label">商品描述</label>
+        <div>
+            <label class="control-label" id="description" />
+        </div>
+    </div>
+
+    <div class="form-group" id="price_container">
+        <label class="control-label">商品价格</label>
+        <div>
+            <label class="control-label" id="price" />
+        </div>
+    </div>
+
+
+    <div  class="form-group" id="promo_price_container">
+        <label style="color:red" class="control-label">秒杀价格</label>
+        <div>
+            <label  style="color:red" class="control-label" id="promo_price" />
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label class="control-label">商品图片</label>
+        <div>
+            <img class="control-label" style="width: 200px;height: auto"  id="imgUrl" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label">商品库存</label>
+        <div>
+            <label class="control-label" id="stock" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label">商品销量</label>
+        <div>
+            <label class="control-label" id="sales" />
+        </div>
+    </div>
+    <div class="form-group">
+
+        <div>
+            <input class="btn btn-lg btn-danger " id="buy_now" type="button" value="立即购买"/>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+</form>
+
+
+<script src="../layui/jquery-3.4.1.js"></script>
+<script src="../layui/layui.all.js"></script>
+
+<script>
+
+    ;!function () {
+        var layer = layui.layer
+            , form = layui.form;
+
+    }();
+    $(function () {
+        var loadingIndex = layer.msg('加载中', {icon: 16});
+        var id = getUrlParam("id");
+        $.ajax({
+            url: "http://localhost:8080/miaosha/item/get",
+            type: "GET",
+            xhrFields: {withCredentials: true},	//前端适配：允许session跨域
+            crossDomain: true,
+            data: {
+                "id": id
+            },
+            success: function (res) {
+                layer.close(loadingIndex);
+                if (res.status == "success") {
+                    load_item(res.data);
+                } else {
+                    alert("加载失败：" + res.data.errMsg);
+                }
+            },
+            error: function (res) {
+                layer.close(loadingIndex);
+                alert("加载失败,系统内部错误：" + res.data.errMsg);
+            }
+
+        });
+
+
+        function load_item(data) {
+            
+            if (data.promoStatus==0) { //没有秒杀活动
+                $("#promo_start_time_container").hide();
+                $("#promo_price_container").hide();
+                $("#promo_name_container").hide();
+
+            } else if (data.promoStatus==1) { //秒杀还未开始
+                time_countdown(data.satrtTime,'距离活动开始还有：');
+                $("#price_container").hide();
+                $("#promo_name").html(data.promoName);
+                $("#promo_start_time").html(data.satrtTime);
+                $("#promo_price").html(data.promoPrice);
+                //禁止下单
+                $("#buy_now").attr("disabled",true);
+            } else {
+                $("#price_container").hide();
+                $("#promo_name").html(data.promoName);
+                $("#promo_title").html("秒杀进行中");
+                time_countdown(data.endTime,"活动结束还剩：")
+                $("#promo_start_time").hide();
+                $("#promo_price").html(data.promoPrice);
+                $("#buy_now").attr("disabled",false);
+            }
+
+            $("#title").html(data.title);
+            $("#description").html(data.decription);
+            $("#stock").html(data.stock);
+            $("#price").html(data.price);
+            $("#imgUrl").prop("src",data.imgUrl);
+            $("#sales").html(data.sales);
+
+        }
+
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]);
+            return null;
+        };
+
+
+        function time_countdown(stringTime,message) {
+
+            layui.use('util', function(){
+                var util = layui.util;
+
+                //示例
+                var startTime = new Date(stringTime)//假设为结束日期
+                    ,serverTime = new Date().getTime(); //假设为当前服务器时间，这里采用的是本地时间，实际使用一般是取服务端的
+
+                util.countdown(startTime, serverTime, function(date, serverTime, timer){
+                    var str = date[0] + '天' + date[1] + '时' +  date[2] + '分' + date[3] + '秒';
+                    layui.$('#countdown').html(message+ str);
+                });
+            });
+
+        };
+
+
+
+        $("#buy_now").click(function () {
+           // var loadingIndex = layer.msg('加载中', {icon: 16});
+            var itemId = getUrlParam("id");
+            $.ajax({
+                url: "http://localhost:8080/miaosha/order/create",
+                type: "POST",
+                xhrFields: {withCredentials: true},	//前端适配：允许session跨域
+                crossDomain: true,
+                data: {
+                    "itemId": id,
+                    "amount":1
+                },
+                success: function (res) {
+                   // layer.close(loadingIndex);
+                    if (res.status == "success") {
+                        alert("下单成功")
+                        document.location.reload();
+                    } else {
+                        alert("下单失败：" + res.data.errMsg);
+                        if (res.data.errCode==20005) {
+                            window.location.href="login.html";
+                        }
+                    }
+                },
+                error: function (res) {
+                    layer.close(loadingIndex);
+                    alert("加载失败,系统内部错误：" + res.data.errMsg);
+                }
+
+            });
+
+        })
+    });
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>添加商品</title>
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <!-- Bootstrap core CSS -->
+    <link href="../layui/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+<body>
+
+<form class="layui-form" id="createForm" action="" method="post">
+    <div class="layui-form-item">
+        <label class="layui-form-label">名称</label>
+        <div class="layui-input-inline">
+            <input type="text" name="title" id="title" required lay-verify="required" placeholder="请输入商品名称"
+                   autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-mid layui-word-aux "></div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">价格</label>
+        <div class="layui-input-inline">
+            <input type="text" name="price" id="price" required lay-verify="required" placeholder="请输入商品价格"
+                   autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-mid layui-word-aux "></div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">库存</label>
+        <div class="layui-input-inline">
+            <input type="text" name="stock" id="stock" required lay-verify="required" placeholder="请输入商品库存"
+                   autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-mid layui-word-aux"></div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">图片</label>
+        <div class="layui-input-inline">
+            <input type="text" name="imgUrl" id="imgUrl" required lay-verify="required" placeholder="请输入商品图片URL"
+                   autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-mid layui-word-aux"></div>
+    </div>
+
+
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">描述</label>
+        <div class="layui-input-block">
+            <textarea name="decription"  id="decription" placeholder="请输入商品描述" class="layui-textarea"></textarea>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" type="button" id="add">添加商品</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+
+<script src="../layui/layui.all.js"></script>
+<script src="../layui/jquery-3.4.1.js"></script>
+
+
+<script>
+
+    ;!function () {
+        var layer = layui.layer
+            , form = layui.form;
+
+        // layer.msg('Hello World');
+    }();
+
+    $(function () {
+
+        $("#add").click(function () {
+            if (validated_form()) {
+                $.ajax({
+                    url: "http://localhost:8080/miaosha/item/add",
+                    type: "POST",
+                    xhrFields: {withCredentials: true},	//前端适配：允许session跨域
+                    crossDomain: true,
+                    data: $("form").serialize(),
+                    success: function (res) {
+                        if (res.status == "success") {
+                            alert("添加成功")
+                            window.location.href = "itemList.html"
+                        } else {
+                            alert("添加失败：" + res.data.errMsg);
+                        }
+                    },
+                    error: function (res) {
+                        alert("添加失败,系统内部错误：" + res.data.errMsg);
+                    }
+
+                })
+            }
+
+        })
+
+        function validated_form() {
+            var name = $("#name").val();
+            var price = $("#price").val();
+            var imgUrl = $("#imgUrl").val();
+            var decription = $("#decription").val();
+
+            if (name == "") {
+                layer.msg("请输入商品名称")
+                return false;
+            }
+            if (price == "") {
+                layer.msg("请输入商品价格")
+                return false;
+            }
+            if (imgUrl == "") {
+                layer.msg("请输入商品图片URL")
+                return false;
+            }
+            if (decription == "") {
+                layer.msg("请输入商品描述")
+                return false;
+            }
+
+            return true;
+        }
+
+    })
+</script>
+</body>
+</html>

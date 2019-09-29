@@ -1,0 +1,104 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>商品列表</title>
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <!-- Bootstrap core CSS -->
+    <link href="../layui/css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+        td
+        {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+<div class="table table-condensed">
+    <table class="table  table-bordered" >
+    <thead>
+    <tr >
+
+        <th>编号</th>
+        <th>商品名称</th>
+        <th>商品价格</th>
+        <th>商品图片</th>
+        <th>商品销量</th>
+        <th>商品描述</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+    </table>
+</div>
+
+<script src="../layui/layui.all.js"></script>
+<script src="../layui/jquery-3.4.1.js"></script>
+
+
+<script>
+
+    ;!function () {
+        var layer = layui.layer
+            , table = layui.table;
+
+        // layer.msg('Hello World');
+    }();
+
+    $(function () {
+
+        var loadingIndex = layer.msg('加载中', {icon: 16});
+
+        $.ajax({
+            url: "http://localhost:8080/miaosha/item/list",
+            type: "GET",
+            xhrFields: {withCredentials: true},	//前端适配：允许session跨域
+            crossDomain: true,
+            success: function (res) {
+                layer.close(loadingIndex);
+                if (res.status == "success") {
+                    reloadDOM(res.data);
+                } else {
+                    alert("加载失败：" + res.data.errMsg);
+                }
+            },
+            error: function (res) {
+                layer.close(loadingIndex);
+                alert("加载失败,系统内部错误：" + res.data.errMsg);
+            }
+
+        });
+
+
+        function reloadDOM(data) {
+            var content = '';
+            $.each(data, function (i, n) {
+                content += '<tr class="item" ItemId=" '+n.id+'">';
+                content += '  <td>' + (i + 1) + '</td>';
+                content += '  <td>' + n.title + '</td>';
+                content += '  <td>' + n.price + '</td>';
+                content += '  <td>' + "<img class=‘img-rounded’width='100' height='100' src=" + n.imgUrl + "/>" + '</td>';
+                content += '  <td>' + n.sales + '</td>';
+                content += '  <td>' + n.decription + '</td>';
+                content += '</tr>';
+            });
+
+            $("tbody").html(content);
+
+        }
+
+
+        $(document).on("click", ".item", function () {
+            var id = $(this).attr("ItemId");
+            window.location.href="getItem.html?id="+id;
+
+        });
+
+
+
+    });
+</script>
+</body>
+</html>

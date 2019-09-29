@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+
+  <title>用户登录</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="../layui/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="../layui/css/signin.css" rel="stylesheet">
+</head>
+
+<body>
+
+
+<form class="form-signin" action="http://localhost:8080/miaosha/user/login">
+  <h1 class="h3 mb-3 font-weight-normal">用户登录</h1>
+  <label class="sr-only">手机号</label>
+  <input type="text" class="form-control" name="telphone" id="telphone" placeholder="手机号"/>
+  <br>
+  <label class="sr-only">密码</label>
+  <input type="password" class="form-control" name="encrptPassword" id="password" placeholder="密码"/>
+  <br>
+
+  <a class="btn btn-lg btn-primary " id="login-btn" type="button">登录</a>
+  <a class="btn btn-lg btn-success " id="register-btn" type="button" href="register.html">注册</a>
+
+</form>
+
+
+
+<script src="../layui/jquery-3.4.1.js"></script>
+<script src="../layui/layui.all.js"></script>
+
+<script>
+
+  ;!function () {
+    var layer = layui.layer
+            , form = layui.form;
+
+    // layer.msg('Hello World');
+  }();
+  $(function () {
+    $("#login-btn").click(function () {
+
+      var telPhone = $("#telphone").val();
+      var password = $("#password").val();
+      if (telPhone==""){
+        alert("手机号不能为空")
+        return;
+      }
+      if (password==""){
+        alert("密码不能为空")
+        return;
+      }
+
+      $.ajax({
+        url: "http://localhost:8080/miaosha/user/login",
+        type: "POST",
+        xhrFields: {withCredentials: true},	//前端适配：允许session跨域
+        crossDomain: true,
+        data: {
+          "telphone":telPhone,
+          "encrptPassword":password
+        },
+        success: function (res) {
+          if (res.status == "success") {
+            alert("登录成功")
+              window.location.href ="itemList.html";
+          }else{
+            alert("登录失败："+res.data.errMsg)
+          }
+        }
+      })
+    })
+
+  })
+</script>
+</body>
+</html>
