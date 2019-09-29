@@ -76,7 +76,7 @@ public class ItemServiceImpl implements ItemService {
 
         //获得活动商品信息
         PromoModel promoModel = promoService.getPromoByItemId(itemModel.getId());
-        if (promoModel != null &&promoModel.getStatus().intValue()!=3) { //加入活动
+        if (promoModel != null &&promoModel.getStatus().intValue()!=3) { //加入活动  3表示已结束
             itemModel.setPromoModel(promoModel);
         }
 

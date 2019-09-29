@@ -32,10 +32,9 @@
         </dependency>
         <!--thymeleaf -->
         <dependency>
-            <groupId>org.thymeleaf</groupId>
-            <artifactId>thymeleaf</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
-
         <!--  -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>

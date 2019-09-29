@@ -31,6 +31,12 @@ public class ItemVO {
     //秒杀活动id
     private  Integer promoId;
 
+    //活动名称
+    private String promoName;
+
     //秒杀活动开始时间
-    private DateTime satrtTime;
+    private String satrtTime;
+
+    //秒杀活动结束时间
+    private String endTime;
 }

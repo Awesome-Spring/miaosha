@@ -20,6 +20,7 @@ spring:
     poolPreparedStatements: true
     maxOpenPreparedStatements: 20
     sql-script-encoding: utf-8
+
 ---
 server:
   servlet:
@@ -31,22 +32,6 @@ logging:
   file: /var/log/tomcat/miaosha.log
   level:
     com.imooc.LoggerTest: info
-
-
-
-spring:
-  thymeleaf:
-      #缓冲的配置
-    cache: false
-    check-template: true
-    check-template-location: true
-      #开启MVC thymeleaf 视图解析
-    enabled: true
-    encoding: utf-8
-    mode: HTML5
-    prefix: classpath:/templates/
-    suffix: .html
-
 
 
 mybatis:

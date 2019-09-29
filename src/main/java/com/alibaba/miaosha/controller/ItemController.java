@@ -6,6 +6,7 @@ import com.alibaba.miaosha.response.CommonReturnType;
 import com.alibaba.miaosha.service.ItemService;
 import com.alibaba.miaosha.service.model.ItemModel;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -49,7 +50,7 @@ public class ItemController {
         return CommonReturnType.create(itemVOList);
     }
 
-    @PostMapping("/create")
+    @PostMapping("/add")
     public CommonReturnType createItem(@Validated ItemForm itemForm, BindingResult result) {
 
         //封装service请求创建商品
@@ -70,8 +71,10 @@ public class ItemController {
         if (itemModel.getPromoModel() != null) { //有秒杀活动，封装相关秒杀属性
             itemVO.setPromoStatus(itemModel.getPromoModel().getStatus()); //秒杀活动状态
             itemVO.setPromoId(itemModel.getPromoModel().getId()); //秒杀活动Id
-            itemVO.setSatrtTime(itemModel.getPromoModel().getStartTime());//秒杀活动开始时间
-            itemVO.setPrice(itemModel.getPromoModel().getPromoPrice());//秒杀活动开始时间
+            itemVO.setSatrtTime(itemModel.getPromoModel().getStartTime().toString(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")));//秒杀活动开始时间
+            itemVO.setEndTime(itemModel.getPromoModel().getEndTime().toString(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")));//秒杀活动开始时间
+            itemVO.setPromoPrice(itemModel.getPromoModel().getPromoPrice());//秒杀价格
+            itemVO.setPromoName(itemModel.getPromoModel().getPromoName());//活动名称
 
         }else { //没有秒杀活动
             itemVO.setPromoStatus(0);

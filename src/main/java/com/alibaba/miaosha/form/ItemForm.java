@@ -30,6 +30,11 @@ public class ItemForm {
     @Min(value = 0,message = "商品销量需大于0")
     private Integer sales;
 
+    //商品销量
+    @NotNull(message = "请输入商品库存")
+    @Min(value = 0,message = "商品库存需大于0")
+    private Integer stock;
+
     //商品图片
     @NotBlank(message = "请输入商品图片信息")
     private String imgUrl;
